@@ -5,17 +5,24 @@ class ImgurScraper < Mechanize
     @url = sanitize_input(url.dup)
 
     get @url
-    directory = @url[/\/r\/(.*?)\//, 1]
+    directory = "E:\\Users\\Pictures\\#{@url[/\/r\/(.*?)\//, 1]}"
 
     thumbnails = page.images_with(:src => /i.imgur.com\/[[:alnum:]]{6,10}/)
     thumbnails.each do |link|
       begin
         transact do
-          agent = Mechanize.new
-          page = agent.get(link.to_s.chomp('.jpg')) # use thumbnail URL to go to full image
-          image = page.image_with(:src => /i.imgur.com\/[[:alnum:]]{6,10}/).fetch
+          short_link = link.to_s.chomp('b.jpg')
           save_name = link.to_s.split('/')[-1]
-          image.save! "E:\\Users\\Pictures\\#{directory}\\#{save_name}"
+
+          page = Mechanize.new.get(short_link) # use thumbnail URL to go to full image
+
+          if page.image_with(:src => /i.imgur.com\/[[:alnum:]]{6,10}/) == nil
+            video = Mechanize.new.get("#{short_link}.mp4")
+            video.save! "#{directory}\\#{save_name.gsub(/.jpg/, '')}.mp4"
+          else
+            pic = page.image_with(:src => /i.imgur.com\/[[:alnum:]]{6,10}/).fetch
+            pic.save! "#{directory}\\#{save_name}"
+          end
         end
       rescue
         $stderr.puts link
@@ -38,4 +45,3 @@ class ImgurScraper < Mechanize
 end
 
 ImgurScraper.new.save_images(ARGV[0])
-
