@@ -7,11 +7,6 @@ class ChanScraper < Mechanize
     @thread_name = @url.split("/").fetch(-1)
     @board_name = @url.split("/").fetch(-4)
     @directory = "E:\\Users\\Pictures\\#{@board_name}\\#{@thread_name}"
-    puts @board_name
-    puts @thread_name
-    puts @directory
-    puts @url
-    #abort
 
     thread = unsecure_page
     thread = thread.get(@url)
