@@ -3,26 +3,31 @@ require 'logger'
 
 class ChanScraper < Mechanize
   def save_images(url)
-    @url = sanitize_input(url.dup)
+    @url = sanitize_url(url.dup)
     @thread_name = @url.split("/").fetch(-1)
     @board_name = @url.split("/").fetch(-4)
     @directory = "E:\\Users\\Pictures\\#{@board_name}\\#{@thread_name}"
+    puts @board_name
+    puts @thread_name
+    puts @directory
+    puts @url
+    #abort
 
     thread = unsecure_page
     thread = thread.get(@url)
-    puts "Connection Established, downloading"
+    puts "Connection Established, downloading..."
 
     file_name = thread.links_with(href: /i.4cdn.org\/#{@board_name}\/[[:alnum:]]{11,14}/)
     file_name.each do |link|
-      if /gif|jpg|webm|png/ =~ link.to_s
+      if link.to_s =~ /gif|jpg|webm|png/
         file = link.click
-        file.save! "#{@directory}//#{link.to_s}"
+        file.save! "#{@directory}//#{link.to_s}" unless invalid?(link.to_s)
       end
     end
   end
 
   private
-  def sanitize_input(url)
+  def sanitize_url(url)
     abort("ERROR: URL is not a string.") unless url.is_a?(String)
 
     url.insert(0, 'https://') unless url[0..7] == 'https://'
@@ -30,6 +35,12 @@ class ChanScraper < Mechanize
       url << "/"
     end
     return url
+  end
+
+  def invalid?(url)
+    if url.include? "http"
+      return true
+    end
   end
 
   def unsecure_page #factory for making Mechanize classes
