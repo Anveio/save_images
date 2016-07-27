@@ -4,14 +4,16 @@ class ImgurSubScraper < Mechanize
   def save_images(url)
     @url = sanitize_input(url.dup)
 
-    get @url
+    page = get(@url)
     puts "Connection Established: Downloading subreddit"
-    directory = "E:\\Users\\Pictures\\#{@url[/\/r\/(.*?)\//, 1]}"
+    subreddit = subreddit_name(page)
+    directory = "E:\\Users\\Pictures\\#{subreddit}"
 
     thumbnails = page.images_with(:src => /i.imgur.com\/[[:alnum:]]{6,10}/)
     thumbnails.each do |link|
       begin
         transact do
+          abort
           short_link = link.to_s.chomp('b.jpg')
           save_name = link.to_s.split('/')[-1]
 
@@ -43,5 +45,10 @@ class ImgurSubScraper < Mechanize
     end
 
     return url
+  end
+
+  def subreddit_name(page)
+    subreddit_name = page.at("title")
+    subreddit_name.to_s[/r\/(.*?) on Imgur/, 1]
   end
 end
