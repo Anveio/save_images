@@ -13,7 +13,6 @@ class ImgurSubScraper < Mechanize
     thumbnails.each do |link|
       begin
         transact do
-          abort
           short_link = link.to_s.chomp('b.jpg')
           save_name = link.to_s.split('/')[-1]
 

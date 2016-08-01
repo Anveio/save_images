@@ -10,16 +10,20 @@ class ChanScraper < Mechanize
     @thread_name = thread_name(thread)
     @board_name = board_name(thread)
     @directory = "E:\\Users\\Pictures\\#{@board_name}\\#{@thread_name}"
+    @dl_count = 0
+
+    #abort(@directory)
 
     file_name = thread.links_with(href: /i.4cdn.org\/#{@board_name}\/[[:alnum:]]{11,14}/)
     file_name.each do |link|
       if link.to_s =~ /gif|jpg|webm|png/
         file = link.click
-        file.save! "#{@directory}//#{link.to_s}" unless invalid?(link.to_s)
+        file.save! "#{@directory}\\#{link.to_s}" unless invalid?(link.to_s)
+        @dl_count += 1
       end
     end
 
-    puts "Finished downloading thread: #{@thread_name} from /#{@board_name}/"
+    puts "Finished downloading #{@dl_count} images from thread: #{@thread_name} on /#{@board_name}/"
   end
 
   private
@@ -55,8 +59,8 @@ class ChanScraper < Mechanize
   end
 
   def thread_name(page)
-    thread_name = page.css('.subject')[0]
-    thread_name.to_s[/<span class="subject">(.*?)<\/span>/, 1]
+    title = page.css('link[rel=canonical]').to_s
+    title.to_s[/\/[[:digit:]]{1,12}\/(.*?)">/, 1]
   end
 
   def board_name(page)
@@ -64,5 +68,3 @@ class ChanScraper < Mechanize
     board_name.to_s[/<div class="boardTitle">\/(.*?)\//, 1]
   end
 end
-
-#ChanScraper.new.save_images(ARGV[0])
