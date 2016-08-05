@@ -12,8 +12,6 @@ class ChanScraper < Mechanize
     @directory = "E:\\Users\\Pictures\\#{@board_name}\\#{@thread_name}"
     @dl_count = 0
 
-    abort(@thread_name)
-
     file_name = thread.links_with(href: /i.4cdn.org\/#{@board_name}\/[[:alnum:]]{11,14}/)
     file_name.each do |link|
       if link.to_s =~ /gif|jpg|webm|png/
