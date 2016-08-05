@@ -12,7 +12,7 @@ class ChanScraper < Mechanize
     @directory = "E:\\Users\\Pictures\\#{@board_name}\\#{@thread_name}"
     @dl_count = 0
 
-    #abort(@directory)
+    abort(@thread_name)
 
     file_name = thread.links_with(href: /i.4cdn.org\/#{@board_name}\/[[:alnum:]]{11,14}/)
     file_name.each do |link|
@@ -59,8 +59,10 @@ class ChanScraper < Mechanize
   end
 
   def thread_name(page)
-    title = page.css('link[rel=canonical]').to_s
-    title.to_s[/\/[[:digit:]]{1,12}\/(.*?)">/, 1]
+    #thread title will come after thread ID(some number between 1 and 12 digits)
+    title = page.css('link[rel=canonical]').to_s[/\/[[:digit:]]{1,12}\/(.*?)">/, 1]
+    #sometimes the thread has no valid string name
+    title ||= page.css('link[rel=canonical]').to_s[/thread\/(.*?)">/, 1]
   end
 
   def board_name(page)
