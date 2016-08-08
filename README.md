@@ -12,5 +12,5 @@ The script accepts valid imgur.com/r/* links and 4chan thread links
 
 ```
 ruby save_images.rb "imgur.com/r/aww/top/year"
-ruby save_images.rb "4chan.org
+ruby save_images.rb "boards.4chan.org/wg/thread/<thread-id>"
 ```
