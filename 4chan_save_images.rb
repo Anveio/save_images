@@ -2,7 +2,7 @@ require 'mechanize'
 
 class ChanScraper < Mechanize
   def save_images(url)
-    @url = sanitize_url(url.dup)
+    @url = format_url(url.dup)
     thread = unsecure_page
     thread = thread.get(@url)
     puts "Connection Established, downloading thread"
@@ -25,21 +25,13 @@ class ChanScraper < Mechanize
   end
 
   private
-  def sanitize_url(input)
-    url = input.chomp
+  def format_url(input)
+    url = input.chomp.downcase
     abort("ERROR: URL is not a string.") unless url.is_a?(String)
-    abort("ERROR: Invalid 4chan URL.") unless url =~ /4chan.org/
-    #Mechanize needs "http" in order to retrieve a page
-    url.insert(0, 'https://') unless url[0..7] == 'https://'
+    abort("ERROR: Invalid 4chan URL.") unless url_has_4chan?(url)
 
-    if url.include? '#'
-      url.chomp!(url[url.index('#')..-1])
-    end
-
-    if url[-1, 1] != "/"
-      url << "/"
-    end
-    return url
+    #Mechanize needs "https://" at beginning of URL. Also make sure "boards." is there too.
+    url.sub!(url[/(.*?)4chan.org/,1], "https://boards.")
   end
 
   #prevent file name errors when saving
@@ -66,5 +58,9 @@ class ChanScraper < Mechanize
   def board_name(page)
     board_name = page.at('.boardTitle')
     board_name.to_s[/<div class="boardTitle">\/(.*?)\//, 1]
+  end
+
+  def url_has_4chan?(url)
+    url =~ /4chan.org/ ? true : false
   end
 end
