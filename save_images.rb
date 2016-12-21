@@ -3,11 +3,13 @@ require_relative 'save_subreddit_images'
 
 ARGV.each do |a|
   case a
-  when /imgur.com\/r\//
+  when /imgur.com\/r\//i
     ImgurSubScraper.new.save_images(ARGV[0])
-  when /4chan.org/
+  when /4chan.org/i
     ChanScraper.new.save_images(ARGV[0])
+  when /reddit.com/i
+    RedditScraper.new.save_images(ARGV[0])
   else
-    puts "Invalid URL not site not supported"
+    puts "Invalid URL or the site is not supported."
   end
 end
