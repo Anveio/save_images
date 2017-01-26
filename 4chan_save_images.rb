@@ -67,6 +67,6 @@ class ChanScraper < Mechanize
     end
 
     def valid_4chan_regex
-      /is.4chan.org\/#{@board_name}\/[[:alnum:]]{11,14}/
+      /is2.4chan.org\/#{@board_name}\/[[:alnum:]]{11,14}/
     end
 end
