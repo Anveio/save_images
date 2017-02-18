@@ -109,4 +109,5 @@ class ChanScraper < Mechanize
     def output_info
       puts "Finished downloading #{@dl_count} images from thread: \"#{@thread_name} on /#{@board_name}/"
     end
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 end
