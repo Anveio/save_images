@@ -6,7 +6,7 @@ ARGV.each do |a|
   when /imgur.com\/r\//i
     ImgurSubScraper.new.save_images(ARGV[0])
   when /4chan.org/i
-    ChanScraper.new.save_images(ARGV[0])
+    ChanScraper.new(ARGV[0]).save_images
   when /reddit.com/i
     RedditScraper.new.save_images(ARGV[0])
   else
