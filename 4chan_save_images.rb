@@ -50,7 +50,7 @@ class ChanScraper < Mechanize
 
     def metadata_found?
       metadata = [@thread, @thread_name, @board_name]
-      metadata.include?(nil)
+      !metadata.include?(nil)
     end
 
     def get_links_in_thread(thread)
@@ -66,9 +66,8 @@ class ChanScraper < Mechanize
         if link.to_s =~ desired_file_type
           file = link.click
           unless invalid?(link.to_s)
-            file.save! "#{@directory}\\#{link.to_s}"
+            file.save! "#{@directory}\\#{link.to_s}" and @dl_count += 1
             print(".") and $stdout.flush
-            @dl_count += 1
           end
         end
       end
