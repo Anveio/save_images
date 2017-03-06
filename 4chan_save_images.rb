@@ -14,21 +14,20 @@ class ChanScraper < Mechanize
 
   def save_images
     output_success if metadata_found?
-    download_links(get_links_in_thread(@thread))
+    download_links(get_links_to_download(@thread))
     output_info
   end
 
   private
     def format_url(input)
       url = input.chomp.downcase
-      abort("ERROR: URL is not a string.") unless url.is_a?(String)
 
       # Mechanize needs "https://" at beginning of URL.
       # Also make sure "boards." is there too.
-      url.sub!(url[/(.*?)4chan.org/,1], "https://boards.")
+      url.sub(url[/(.*?)4chan.org/,1], "https://boards.")
     end
 
-    # Need to bypass HTTPS only websites.
+    # Needed to bypass HTTPS only websites.
     def unsecure_page
       a = Mechanize.new
       a.user_agent_alias = 'Mac Safari'
@@ -53,29 +52,29 @@ class ChanScraper < Mechanize
       !metadata.include?(nil)
     end
 
-    def get_links_in_thread(thread)
-      image_urls = thread.links_with(href: valid_4chan_regex)
+    # Prevent file name errors when saving
+    def invalid?(save_name)
+      save_name.include?("http")
     end
 
     def desired_file_type
       /webm/
     end
 
-    def download_links(links)
-      links.each do |link|
-        if link.to_s =~ desired_file_type
-          file = link.click
-          unless invalid?(link.to_s)
-            file.save! "#{@directory}\\#{link.to_s}" and @dl_count += 1
-            print(".") and $stdout.flush
-          end
-        end
-      end
+    def get_links_to_download(thread)
+      # Only user posted links
+      links = thread.links_with(href: valid_4chan_regex)
+
+      # Only correct file type
+      links.select{ |link| link.text =~ desired_file_type && !invalid?(link.text)}
     end
 
-    # Prevent file name errors when saving
-    def invalid?(save_name)
-      save_name.include?("http")
+    def download_links(links)
+      links.each do |link|
+        file = link.click
+        file.save! "#{@directory}\\#{link.to_s}" and @dl_count += 1
+        print(".") and $stdout.flush
+      end
     end
 
     def valid_4chan_regex
@@ -83,7 +82,8 @@ class ChanScraper < Mechanize
     end
 
     def output_success
-      puts "Connection Established. Downloading thread: \"#{@thread_name}\" from /#{@board_name}/ to #{@directory}"
+      puts "\nConnection Established. Downloading thread: \"#{@thread_name}\" from /#{@board_name}/. \nSaving to #{@directory}\n "
+
     end
 
     def output_info
