@@ -1,5 +1,5 @@
 # save_images
-Ruby script using the Mechanize gem that downloads the images from a given imgur.com/r/* URL or 4chan thread.
+Ruby command line tool using the Mechanize gem that downloads the images from a given imgur.com/r/* URL or 4chan thread.
 
 ### How to use
 This requires the Ruby [Mechanize](https://github.com/sparklemotion/mechanize) gem.
